@@ -25,14 +25,11 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var user models.User
-	fmt.Println(req)
 	result := db.DB.Where("id = ?", req.ID).First(&user)
 	if result.Error != nil {
 		http.Error(w, "Invalid credentials", http.StatusUnauthorized)
 		return
 	}
-
-	fmt.Printf("user found %v\n", user.PasswordHash)
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(req.Password)); err != nil {
 		http.Error(w, "Invalid credentials", http.StatusUnauthorized)
