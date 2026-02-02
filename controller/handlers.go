@@ -1,20 +1,18 @@
-package handlers
+package controller
 
 import (
 	"encoding/json"
 	"fmt"
 	"net/http"
 
-	"github.com/Greeshmanth-Pulicallu/login-api/repository"
-	"github.com/Greeshmanth-Pulicallu/login-api/utils"
-	"github.com/gin-gonic/gin"
+	"github.com/Greeshmanth-Pulicallu/login-api/config"
+	"github.com/Greeshmanth-Pulicallu/login-api/db"
+	"github.com/Greeshmanth-Pulicallu/login-api/models"
 	"golang.org/x/crypto/bcrypt"
 )
 
 // Sends JWT if credentials are valid, else 401.
-func LoginHandler(c *gin.Context) {
-	r := c.Request
-	w := c.Writer
+func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
@@ -26,14 +24,9 @@ func LoginHandler(c *gin.Context) {
 		return
 	}
 
-	// var user models.User
-	// result := db.DB.Where("id = ?", req.ID).First(&user)
-	// if result.Error != nil {
-	// 	http.Error(w, "Invalid credentials", http.StatusUnauthorized)
-	// 	return
-	// }
-	user, err := repository.GetUserFromDB(req.ID)
-	if err != nil {
+	var user models.User
+	result := db.DB.Where("id = ?", req.ID).First(&user)
+	if result.Error != nil {
 		http.Error(w, "Invalid credentials", http.StatusUnauthorized)
 		return
 	}
@@ -43,7 +36,7 @@ func LoginHandler(c *gin.Context) {
 		return
 	}
 
-	token, err := utils.GenerateJWT(user.ID)
+	token, err := config.GenerateJWT(user.ID)
 	if err != nil {
 		fmt.Printf("Unable to GenerateJWT %v\n", err)
 	}
