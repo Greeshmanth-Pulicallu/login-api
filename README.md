@@ -9,7 +9,9 @@ Upon successful login the endpoint sends a jwt that is signed with a secret key 
 1. Install dependecnies with `go get .`
 2. Start the postgres server with `docker-compose up`
 3. build with `go build .`
-4. run `main`
+4. run `./login-api`
+5. or simply run `make start-process` instead
+6. kill the go process with ctrl-c, to stop the container, run `make stop-process`
 
 ### Note
 an environment file needs to be setup, check example `.env` file for context.
